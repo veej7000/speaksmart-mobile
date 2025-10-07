@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>SpeakSmart Mobile</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Floating Shapes */
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .shape {
+            position: absolute;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .shape:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .shape:nth-child(2) {
+            width: 120px;
+            height: 120px;
+            top: 60%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+
+        .shape:nth-child(3) {
+            width: 60px;
+            height: 60px;
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        /* App Container */
+        .app-container {
+            position: relative;
+            z-index: 2;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            color: #ffd700;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Feature Cards */
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .feature-card h3 {
+            color: #ffd700;
+            font-size: 18px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-card p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .premium-badge {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #333;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+            margin-left: auto;
+        }
+
+        /* Voice Recording Button */
+        .voice-button {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+        }
+
+        .voice-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 40px rgba(255, 107, 107, 0.4);
+        }
+
+        .voice-button.recording {
+            animation: pulse 1s infinite;
+            background: linear-gradient(45deg, #ff4757, #c44569);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            display: flex;
+            justify-content: space-around;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .nav-item.active {
+            color: #ffd700;
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        .nav-item:hover {
+            color: #ffd700;
+            transform: translateY(-2px);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+        }
+
+        .nav-label {
+            font-size: 12px;
+        }
+
+        /* Speech Analysis Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .modal h2 {
+            color: #ffd700;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .analysis-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            text-align: center;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: #ffd700;
+            color: #ffd700;
+        }
+
+        .analysis-result {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .score {
+            font-size: 36px;
+            font-weight: bold;
+            color: #ffd700;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .close-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: #ff3742;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 20px;
+            }
+            
+            .feature-card h3 {
+                font-size: 16px;
+            }
+            
+            .voice-button {
+                width: 70px;
+                height: 70px;
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Shapes -->
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
+    <!-- App Container -->
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🎤 SpeakSmart Mobile</h1>
+            <p>AI-Powered Language Learning</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Voice Recording -->
+            <div class="feature-card">
+                <h3>🧠 AI Speech Analysis <span class="premium-badge">NEW</span></h3>
+                <p>Revolutionary AI analyzes your speech with 5 comprehensive metrics</p>
+                <button class="voice-button" onclick="startRecording()">🎤</button>
+            </div>
+
+            <!-- Features -->
+            <div class="feature-card" onclick="openFeature('pronunciation')">
+                <h3>🗣️ Pronunciation Trainer</h3>
+                <p>Real-time pronunciation scoring and feedback</p>
+            </div>
+
+            <div class="feature-card" onclick="openFeature('conversation')">
+                <h3>💬 Conversation Practice <span class="premium-badge">PRO</span></h3>
+                <p>AI-powered interactive dialogues</p>
+            </div>
+
+            <div class="feature-card" onclick="openFeature('accent')">
+                <h3>🎭 Accent Reduction <span class="premium-badge">PRO</span></h3>
+                <p>Targeted exercises for accent improvement</p>
+            </div>
+
+            <div class="feature-card" onclick="openFeature('translator')">
+                <h3>🌍 Live Translator</h3>
+                <p>500+ languages with voice input/output</p>
+            </div>
+
+            <div class="feature-card" onclick="openFeature('games')">
+                <h3>🎮 Learning Games</h3>
+                <p>Interactive vocabulary and pronunciation games</p>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item active">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-label">Home</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">🧠</div>
+                <div class="nav-label">Analysis</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">🗣️</div>
+                <div class="nav-label">Practice</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">🌍</div>
+                <div class="nav-label">Translate</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">⚙️</div>
+                <div class="nav-label">Settings</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Speech Analysis Modal -->
+    <div class="modal" id="analysisModal">
+        <div class="modal-content">
+            <h2>🧠 AI Speech Analysis</h2>
+            
+            <div class="analysis-tabs">
+                <div class="tab active" onclick="showTab('overall')">Overall</div>
+                <div class="tab" onclick="showTab('pronunciation')">Pronunciation</div>
+                <div class="tab" onclick="showTab('intonation')">Intonation</div>
+                <div class="tab" onclick="showTab('emotion')">Emotion</div>
+                <div class="tab" onclick="showTab('context')">Context</div>
+            </div>
+
+            <div class="analysis-result" id="analysisResult">
+                <div class="score">87%</div>
+                <p style="color: white; text-align: center;">
+                    Excellent pronunciation with natural intonation. 
+                    Your emotional tone is confident and appropriate for business context.
+                </p>
+            </div>
+
+            <button class="close-btn" onclick="closeModal()">Close Analysis</button>
+        </div>
+    </div>
+
+    <script>
+        let isRecording = false;
+        let recognition;
+
+        // Initialize Speech Recognition
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+        }
+
+        function startRecording() {
+            const button = document.querySelector('.voice-button');
+            
+            if (!isRecording) {
+                // Start recording
+                isRecording = true;
+                button.classList.add('recording');
+                button.innerHTML = '⏹️';
+                
+                if (recognition) {
+                    recognition.start();
+                    
+                    recognition.onresult = function(event) {
+                        const transcript = event.results[0][0].transcript;
+                        console.log('Recorded:', transcript);
+                        
+                        // Simulate AI analysis
+                        setTimeout(() => {
+                            showAnalysis();
+                        }, 1000);
+                    };
+                    
+                    recognition.onerror = function(event) {
+                        console.error('Speech recognition error:', event.error);
+                        stopRecording();
+                    };
+                }
+                
+                // Auto-stop after 5 seconds
+                setTimeout(() => {
+                    if (isRecording) {
+                        stopRecording();
+                        showAnalysis();
+                    }
+                }, 5000);
+                
+            } else {
+                // Stop recording
+                stopRecording();
+                showAnalysis();
+            }
+        }
+
+        function stopRecording() {
+            const button = document.querySelector('.voice-button');
+            isRecording = false;
+            button.classList.remove('recording');
+            button.innerHTML = '🎤';
+            
+            if (recognition) {
+                recognition.stop();
+            }
+        }
+
+        function showAnalysis() {
+            document.getElementById('analysisModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('analysisModal').style.display = 'none';
+        }
+
+        function showTab(tabName) {
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+            
+            // Update analysis result based on tab
+            const resultDiv = document.getElementById('analysisResult');
+            
+            const results = {
+                overall: {
+                    score: '87%',
+                    text: 'Excellent pronunciation with natural intonation. Your emotional tone is confident and appropriate for business context.'
+                },
+                pronunciation: {
+                    score: '92%',
+                    text: 'Clear articulation of consonants and vowels. Minor improvement needed on "th" sounds.'
+                },
+                intonation: {
+                    score: '85%',
+                    text: 'Natural pitch variation with appropriate stress patterns. Good rhythm and pacing.'
+                },
+                emotion: {
+                    score: '89%',
+                    text: 'Confident and engaging tone. Emotional expression matches content appropriately.'
+                },
+                context: {
+                    score: '84%',
+                    text: 'Professional tone suitable for business context. Formal register maintained throughout.'
+                }
+            };
+            
+            const result = results[tabName];
+            resultDiv.innerHTML = `
+                <div class="score">${result.score}</div>
+                <p style="color: white; text-align: center;">${result.text}</p>
+            `;
+        }
+
+        function openFeature(feature) {
+            alert(`Opening ${feature} feature! This would navigate to the ${feature} screen in the full app.`);
+        }
+
+        // Navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(nav => {
+                    nav.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+
+        // Text-to-Speech function
+        function speak(text, lang = 'en-US') {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = lang;
+                utterance.rate = 0.8;
+                utterance.pitch = 1;
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Add click sound feedback
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('feature-card') || 
+                e.target.classList.contains('nav-item') ||
+                e.target.classList.contains('voice-button')) {
+                // Haptic feedback for mobile
+                if (navigator.vibrate) {
+                    navigator.vibrate(50);
+                }
+            }
+        });
+
+        // PWA Installation
+        let deferredPrompt;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show install button
+            const installBtn = document.createElement('button');
+            installBtn.textContent = '📱 Install App';
+            installBtn.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #ffd700;
+                color: #333;
+                border: none;
+                padding: 10px 15px;
+                border-radius: 20px;
+                font-weight: bold;
+                cursor: pointer;
+                z-index: 1000;
+            `;
+            
+            installBtn.addEventListener('click', () => {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                    }
+                    deferredPrompt = null;
+                    installBtn.remove();
+                });
+            });
+            
+            document.body.appendChild(installBtn);
+        });
+
+        console.log('🎉 SpeakSmart Mobile Web App Loaded!');
+        console.log('🧠 AI Speech Analysis Ready');
+        console.log('🎤 Voice Recognition Active');
+        console.log('🔊 Text-to-Speech Available');
+    </script>
+</body>
+</html>
