@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -7,7 +8,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>SpeakSmart Mobile</title>
-    
+    <link rel="manifest" href="manifest.json">
+
     <style>
         * {
             margin: 0;
@@ -66,8 +68,15 @@
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(180deg); }
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
         }
 
         /* App Container */
@@ -179,9 +188,17 @@
         }
 
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
         }
 
         /* Bottom Navigation */
@@ -317,11 +334,11 @@
             .header h1 {
                 font-size: 20px;
             }
-            
+
             .feature-card h3 {
                 font-size: 16px;
             }
-            
+
             .voice-button {
                 width: 70px;
                 height: 70px;
@@ -330,6 +347,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Floating Shapes -->
     <div class="floating-shapes">
@@ -411,7 +429,7 @@
     <div class="modal" id="analysisModal">
         <div class="modal-content">
             <h2>🧠 AI Speech Analysis</h2>
-            
+
             <div class="analysis-tabs">
                 <div class="tab active" onclick="showTab('overall')">Overall</div>
                 <div class="tab" onclick="showTab('pronunciation')">Pronunciation</div>
@@ -423,7 +441,7 @@
             <div class="analysis-result" id="analysisResult">
                 <div class="score">87%</div>
                 <p style="color: white; text-align: center;">
-                    Excellent pronunciation with natural intonation. 
+                    Excellent pronunciation with natural intonation.
                     Your emotional tone is confident and appropriate for business context.
                 </p>
             </div>
@@ -446,32 +464,32 @@
 
         function startRecording() {
             const button = document.querySelector('.voice-button');
-            
+
             if (!isRecording) {
                 // Start recording
                 isRecording = true;
                 button.classList.add('recording');
                 button.innerHTML = '⏹️';
-                
+
                 if (recognition) {
                     recognition.start();
-                    
-                    recognition.onresult = function(event) {
+
+                    recognition.onresult = function (event) {
                         const transcript = event.results[0][0].transcript;
                         console.log('Recorded:', transcript);
-                        
+
                         // Simulate AI analysis
                         setTimeout(() => {
                             showAnalysis();
                         }, 1000);
                     };
-                    
-                    recognition.onerror = function(event) {
+
+                    recognition.onerror = function (event) {
                         console.error('Speech recognition error:', event.error);
                         stopRecording();
                     };
                 }
-                
+
                 // Auto-stop after 5 seconds
                 setTimeout(() => {
                     if (isRecording) {
@@ -479,7 +497,7 @@
                         showAnalysis();
                     }
                 }, 5000);
-                
+
             } else {
                 // Stop recording
                 stopRecording();
@@ -492,7 +510,7 @@
             isRecording = false;
             button.classList.remove('recording');
             button.innerHTML = '🎤';
-            
+
             if (recognition) {
                 recognition.stop();
             }
@@ -511,13 +529,13 @@
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.classList.remove('active');
             });
-            
+
             // Add active class to clicked tab
             event.target.classList.add('active');
-            
+
             // Update analysis result based on tab
             const resultDiv = document.getElementById('analysisResult');
-            
+
             const results = {
                 overall: {
                     score: '87%',
@@ -540,7 +558,7 @@
                     text: 'Professional tone suitable for business context. Formal register maintained throughout.'
                 }
             };
-            
+
             const result = results[tabName];
             resultDiv.innerHTML = `
                 <div class="score">${result.score}</div>
@@ -554,7 +572,7 @@
 
         // Navigation
         document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', function() {
+            item.addEventListener('click', function () {
                 document.querySelectorAll('.nav-item').forEach(nav => {
                     nav.classList.remove('active');
                 });
@@ -574,8 +592,8 @@
         }
 
         // Add click sound feedback
-        document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('feature-card') || 
+        document.addEventListener('click', function (e) {
+            if (e.target.classList.contains('feature-card') ||
                 e.target.classList.contains('nav-item') ||
                 e.target.classList.contains('voice-button')) {
                 // Haptic feedback for mobile
@@ -587,11 +605,11 @@
 
         // PWA Installation
         let deferredPrompt;
-        
+
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            
+
             // Show install button
             const installBtn = document.createElement('button');
             installBtn.textContent = '📱 Install App';
@@ -608,7 +626,7 @@
                 cursor: pointer;
                 z-index: 1000;
             `;
-            
+
             installBtn.addEventListener('click', () => {
                 deferredPrompt.prompt();
                 deferredPrompt.userChoice.then((choiceResult) => {
@@ -619,7 +637,7 @@
                     installBtn.remove();
                 });
             });
-            
+
             document.body.appendChild(installBtn);
         });
 
@@ -629,4 +647,5 @@
         console.log('🔊 Text-to-Speech Available');
     </script>
 </body>
+
 </html>
